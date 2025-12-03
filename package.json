@@ -1,0 +1,44 @@
+{
+  "name": "dmdesk",
+  "version": "0.1.0",
+  "description": "DMDesk – local, browser-based Dungeon Master assistant with on-device markdown library and ChatGPT retrieval.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MichaelRedant/DMDesk.git"
+  },
+  "keywords": [
+    "dnd",
+    "dm",
+    "vite",
+    "react",
+    "browser"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MichaelRedant/DMDesk/issues"
+  },
+  "homepage": "https://github.com/MichaelRedant/DMDesk#readme",
+  "dependencies": {
+    "idb-keyval": "^6.2.2",
+    "marked": "^17.0.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zustand": "^5.0.9"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6"
+  }
+}

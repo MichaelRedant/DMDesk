@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Monster, MonsterFilters } from '../types/monsters';
 import { MonsterFilters as MonsterFiltersPanel } from './MonsterFilters';
-import { MonsterList } from './MonsterList';
+import { MonsterList, MonsterGroup } from './MonsterList';
 import { MonsterDetail } from './MonsterDetail';
 import { filterAndSortMonsters } from '../services/monsterSearch';
 import { STRINGS, LanguageCode } from '../config/strings';
@@ -36,7 +36,28 @@ export function MonsterBrowser({ monsters, lang }: MonsterBrowserProps) {
     [monsters, filters, sortBy, sortDirection]
   );
 
-  const selected = filtered.find((m) => m.id === selectedId) ?? filtered[0];
+  const groups: MonsterGroup[] = useMemo(() => {
+    const byRoot = new Map<string, Monster[]>();
+    const nameSet = new Set(filtered.map((m) => m.name.toLowerCase()));
+    filtered.forEach((m) => {
+      const rootCandidate = m.name.split('(')[0].trim();
+      const hasRoot = nameSet.has(rootCandidate.toLowerCase());
+      const root = hasRoot ? rootCandidate : m.name;
+      if (!byRoot.has(root)) byRoot.set(root, []);
+      byRoot.get(root)!.push(m);
+    });
+    return Array.from(byRoot.entries())
+      .map(([root, variants]) => ({
+        root,
+        variants: variants.sort((a, b) => a.name.localeCompare(b.name))
+      }))
+      .sort((a, b) => a.root.localeCompare(b.root));
+  }, [filtered]);
+
+  const selected =
+    filtered.find((m) => m.id === selectedId) ??
+    (groups.length ? groups[0].variants[0] : undefined);
+  const selectedGroup = groups.find((g) => g.variants.some((v) => v.id === selected?.id));
 
   return (
     <div className="monster-browser">
@@ -73,10 +94,10 @@ export function MonsterBrowser({ monsters, lang }: MonsterBrowserProps) {
             </button>
           </div>
         </div>
-        <MonsterList monsters={filtered} selectedId={selected?.id} onSelect={setSelectedId} />
+        <MonsterList groups={groups} selectedId={selected?.id} onSelect={setSelectedId} />
       </aside>
       <main className="monster-main">
-        <MonsterDetail monster={selected} lang={lang} />
+        <MonsterDetail monster={selected} group={selectedGroup} onSelectVariant={setSelectedId} lang={lang} />
       </main>
     </div>
   );

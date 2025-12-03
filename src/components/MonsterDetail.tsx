@@ -1,18 +1,20 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Monster } from '../types/monsters';
 import { STRINGS, LanguageCode } from '../config/strings';
 import { SourceBadge } from './SourceBadge';
 import { marked } from 'marked';
+import { MonsterGroup } from './MonsterList';
 
 interface MonsterDetailProps {
   monster?: Monster;
+  group?: MonsterGroup;
+  onSelectVariant: (id: string) => void;
   lang: LanguageCode;
 }
 
-export function MonsterDetail({ monster, lang }: MonsterDetailProps) {
+export function MonsterDetail({ monster, group, onSelectVariant, lang }: MonsterDetailProps) {
   const t = STRINGS[lang];
   const [showDebug, setShowDebug] = useState(false);
-  const [tab, setTab] = useState<'stat' | 'actions' | 'lore'>('stat');
 
   if (!monster) {
     return (
@@ -23,9 +25,7 @@ export function MonsterDetail({ monster, lang }: MonsterDetailProps) {
   }
 
   const renderMarkdown = (text?: string) =>
-    text ? <div dangerouslySetInnerHTML={{ __html: marked.parse(text) }} /> : <p className="muted small">—</p>;
-  const renderRawHtml = (text?: string) =>
-    text ? <div className="monster-raw" dangerouslySetInnerHTML={{ __html: text }} /> : <p className="muted small">—</p>;
+    text ? <div className="markdown" dangerouslySetInnerHTML={{ __html: marked.parse(text) }} /> : <p className="muted small">—</p>;
 
   return (
     <div className="card monster-detail">
@@ -45,6 +45,20 @@ export function MonsterDetail({ monster, lang }: MonsterDetailProps) {
           </button>
         </div>
       </header>
+
+      {group && group.variants.length > 1 ? (
+        <div className="variant-chips">
+          {group.variants.map((v) => (
+            <button
+              key={v.id}
+              className={v.id === monster.id ? 'pill accent' : 'pill muted'}
+              onClick={() => onSelectVariant(v.id)}
+            >
+              {v.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       {monster.imageUrls.length > 0 ? (
         <div className="image-strip">
@@ -94,35 +108,30 @@ export function MonsterDetail({ monster, lang }: MonsterDetailProps) {
         </section>
       ) : null}
 
-      <div className="tabs compact">
-        <button className={tab === 'stat' ? 'tab active' : 'tab'} onClick={() => setTab('stat')}>
-          {t.statblock}
-        </button>
-        <button className={tab === 'actions' ? 'tab active' : 'tab'} onClick={() => setTab('actions')}>
-          {t.traitsActions}
-        </button>
-        <button className={tab === 'lore' ? 'tab active' : 'tab'} onClick={() => setTab('lore')}>
-          {t.lore}
-        </button>
+      <div className="monster-section">
+        <h4>{t.statblock}</h4>
+        {renderMarkdown(monster.rawBlock)}
       </div>
 
-      {tab === 'stat' ? <div className="monster-section">{renderRawHtml(monster.rawBlock)}</div> : null}
-      {tab === 'actions' ? (
+      {(monster.traitsRaw || monster.actionsRaw || monster.reactionsRaw || monster.legendaryRaw) && (
         <div className="monster-section">
+          <h4>{t.traitsActions}</h4>
           {renderMarkdown(monster.traitsRaw)}
           {renderMarkdown(monster.actionsRaw)}
           {renderMarkdown(monster.reactionsRaw)}
           {renderMarkdown(monster.legendaryRaw)}
         </div>
-      ) : null}
-      {tab === 'lore' ? (
+      )}
+
+      {(monster.fluffRaw || (monster.extraFluff && monster.extraFluff.length > 0)) && (
         <div className="monster-section">
+          <h4>{t.lore}</h4>
           {renderMarkdown(monster.fluffRaw)}
           {monster.extraFluff?.map((f, idx) => (
             <div key={idx}>{renderMarkdown(f)}</div>
           ))}
         </div>
-      ) : null}
+      )}
 
       {showDebug ? (
         <details open className="monster-section debug">

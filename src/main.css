@@ -471,7 +471,7 @@ button.small {
 
 .monster-browser {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 420px 1fr;
   gap: 12px;
   align-items: start;
 }
@@ -490,6 +490,8 @@ button.small {
 
 .monster-main {
   min-height: 70vh;
+  overflow: auto;
+  padding-right: 6px;
 }
 
 .monster-list-card {
@@ -497,7 +499,7 @@ button.small {
 }
 
 .monster-list {
-  max-height: 65vh;
+  max-height: 68vh;
   overflow: auto;
   display: grid;
 }
@@ -522,7 +524,13 @@ button.small {
 
 .monster-detail {
   display: grid;
-  gap: 10px;
+  gap: 14px;
+}
+
+.variant-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .monster-detail-header {
@@ -555,6 +563,7 @@ button.small {
   border-radius: 10px;
   padding: 10px;
   background: #fff;
+  overflow: auto;
 }
 
 .monster-list-item:focus {
@@ -572,7 +581,7 @@ button.small {
 }
 
 .overlay-content {
-  width: min(1200px, 100%);
+  width: min(1600px, 100%);
   height: min(90vh, 100%);
   background: #f7f9fc;
   border-radius: 16px;
@@ -599,6 +608,26 @@ button.small {
 
 .monster-raw td,
 .monster-raw th {
+  border: 1px solid var(--border);
+  padding: 4px 6px;
+}
+
+/* Markdown rendering */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5 {
+  margin: 8px 0 4px;
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown td,
+.markdown th {
   border: 1px solid var(--border);
   padding: 4px 6px;
 }

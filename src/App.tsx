@@ -12,7 +12,7 @@ import { retrieveTopChunks } from './services/retriever';
 import { generateChatCompletion, ChatCompletionMessageParam } from './services/openaiClient';
 import { AppSettings, FocusType, Mode, SourceRef } from './types';
 import { Monster } from './types/monsters';
-import { loadMonsterBooks, parseMonstersFromMarkdown } from './services/monsterParser';
+import { loadAndParseMonsters } from './services/monsterParser';
 import { STRINGS } from './config/strings';
 
 const MAX_CONTEXT_CHARS = 12000;
@@ -143,14 +143,8 @@ export default function App() {
   // Load books and parse monsters (Monster Manual + Volo's)
   useEffect(() => {
     if (monstersLoaded) return;
-    loadMonsterBooks()
-      .then((books) => {
-        const parsed: Monster[] = [];
-        books.forEach((book) => {
-          parsed.push(...parseMonstersFromMarkdown(book.markdown, book.path.replace('/books/', ''), book.sourceId));
-        });
-        setMonsters(parsed);
-      })
+    loadAndParseMonsters()
+      .then((parsed) => setMonsters(parsed))
       .catch((err) => setStatus(err instanceof Error ? err.message : 'Kon monsters niet laden.'))
       .finally(() => setMonstersLoaded(true));
   }, [monstersLoaded]);
